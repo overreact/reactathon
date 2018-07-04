@@ -30,9 +30,8 @@ class ListEvents extends Component {
     deleteData(id) {    
       console.log("hello"+id)
       //event.preventDefault();
-     this.eventsService.deleteData(id).then((response)=> {
+     this.eventsService.deleteData(id).then(response=> {
       this.refreshData();
-      console.log(response)
     })
     .catch(function (error) {
       console.log(error);

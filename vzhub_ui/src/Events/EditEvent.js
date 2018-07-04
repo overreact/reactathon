@@ -37,7 +37,7 @@ class EditItem extends Component {
       this.setState({ items: res.data });
       this.props.history.push('/list-event');
     })
-    .catch(err => console.log(err));  
+    .catch(err => console.log(err));;    
   }
   handleCancelled(event){
     event.preventDefault();    

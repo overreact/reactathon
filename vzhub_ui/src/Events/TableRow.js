@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
-
+import EventsService from './EventsService';
 
 class TableRow extends Component {
 

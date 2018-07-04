@@ -12,7 +12,8 @@ const data = {
   menus: [
     { text: 'Events', icon: <Assessment/>, link: '/dashboard' },
     { text: 'Add Event', icon: <Web/>, link: '/form' },
-    { text: 'LeaderBoard', icon: <GridOn/>, link: '/table' },    
+    { text: 'LeaderBoard', icon: <Assessment/>, link: '/table' },    
+    { text: 'CollabSpace', icon: <GridOn/>, link: '/table' },    
   ],
   tablePage: {
     items: [

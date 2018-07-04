@@ -3,7 +3,7 @@ import {cyan600, pink600, purple600, orange600} from 'material-ui/styles/colors'
 import Assessment from 'material-ui/svg-icons/action/assessment';
 import Face from 'material-ui/svg-icons/action/face';
 import ThumbUp from 'material-ui/svg-icons/action/thumb-up';
-import ShoppingCart from 'material-ui/svg-icons/action/shopping-cart';
+import Subject from 'material-ui/svg-icons/action/subject';
 import InfoBox from '../components/dashboard/InfoBox';
 import RecentlyProducts from '../components/dashboard/RecentlyProducts';
 import globalStyles from '../styles';
@@ -19,7 +19,7 @@ class DashboardPage extends Component {
 
   constructor(props) {
       super(props);
-      this.state = {value: '', items: [], selectedItem:{}};
+    this.state = { value: '', items: [], selectedItem: {}, listOfPartipant: [], eventsCount:0,teamsCount:0};
       this.eventsService = new EventsService();
       this.deleteData=this.deleteData.bind(this);  
       this.clickEventHandler=this.clickEventHandler.bind(this);
@@ -34,10 +34,51 @@ class DashboardPage extends Component {
     }
     componentDidMount(){
       this.refreshData();
+      this.getList();
     
        // this.addItemService.listData()
     }
 
+
+
+            getList(){     
+            axios.get('http://localhost:4200/events/list')
+            .then(response => {
+              let map = new Map();
+              this.setState({ eventsCount: response.data.length });   
+              response.data.map((eventObj)=>{
+                eventObj.teams.map((team)=>{
+                  this.setState({ teamsCount:this.state.teamsCount+1 }); 
+                  team.teamMembers.map((member)=>{
+                  if(map.has(member.participantEmail)){
+                    map.set(member.participantEmail,{memberName:member.participantName,noOfEvents:(map.get(member.participantEmail).noOfEvents+1)})
+                  }else{
+                    if(member.participantEmail!=undefined && member.participantEmail!='')
+                    map.set(member.participantEmail,{memberName:member.participantName,noOfEvents:1})
+                  }
+                })
+              })
+              });
+              console.log(map)
+              var keys =[ ...map.keys() ];
+              var listOfPartipant=[];
+              keys.forEach(element => {
+                const participant={
+                  name:map.get(element).memberName,
+                  email:element,
+                  count:map.get(element).noOfEvents,
+                }
+                listOfPartipant.push(participant)
+              });
+             
+              this.setState({listOfPartipant:listOfPartipant})
+              console.log(this.state);
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+            
+          }
     refreshData(){
       this.setState({ selectedItem:  ''});
       axios.get('http://localhost:4200/events/list')
@@ -92,10 +133,10 @@ class DashboardPage extends Component {
       <div className="row">
 
         <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3 m-b-15 ">
-          <InfoBox Icon={ShoppingCart}
+          <InfoBox Icon={Subject}
                    color={pink600}
-                   title="Total Profit"
-                   value="1500k"
+                   title="Total Participants"
+                   value={this.state.listOfPartipant.length}
           />
         </div>
 
@@ -103,16 +144,17 @@ class DashboardPage extends Component {
         <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3 m-b-15 ">
           <InfoBox Icon={ThumbUp}
                    color={cyan600}
-                   title="Likes"
-                   value="4231"
+                   title="Total Number of Events"
+                   value={this.state.eventsCount}
           />
         </div>
 
         <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3 m-b-15 ">
           <InfoBox Icon={Assessment}
                    color={purple600}
-                   title="Sales"
-                   value="460"
+                   title="No Of Teams Registered"
+                   value={this.state.teamsCount}
+              
           />
         </div>
 

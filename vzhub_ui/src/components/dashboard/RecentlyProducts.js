@@ -77,6 +77,7 @@ render() {
                 primaryText={item.eventName}
                 secondaryText={item.eventName}
                 rightIconButton={this.rightIconMenu}
+                onClick={(event) => this.props.clickEventHandler(item._id,event)}    
               />
               <Divider inset={true} />
             </div>

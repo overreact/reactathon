@@ -23,6 +23,7 @@ class DashboardPage extends Component {
       this.eventsService = new EventsService();
       this.deleteData=this.deleteData.bind(this);  
       this.clickEventHandler=this.clickEventHandler.bind(this);
+      this.completeHandler=this.completeHandler.bind(this);
     }
     
     clickEventHandler(id){
@@ -38,15 +39,25 @@ class DashboardPage extends Component {
     }
 
     refreshData(){
+      this.setState({ selectedItem:  ''});
       axios.get('http://localhost:4200/events/list')
       .then(response => {
-        this.setState({ items: response.data });
-        this.tabRow()
+        this.setState({ items: response.data });        
       })
       .catch(function (error) {
         console.log(error);
       })
     }
+
+    completeHandler(id){    
+      event.preventDefault();    
+      this.state.selectedItem.cancelled=true;
+      this.eventsService.updateData(this.state.selectedItem,id).then(res => {
+        this.refreshData();      
+      })
+      .catch(err => console.log(err));
+  }
+
     deleteData(id) {    
       console.log("hello"+id)
       //event.preventDefault();
@@ -58,15 +69,9 @@ class DashboardPage extends Component {
     });
     }
 
-    tabRow(){
-      if(this.state.items instanceof Array){                  
-        Data.dashBoardPage.openEvents.push(this.state.items.filter((obj)=>obj.cancelled===false));
-        Data.dashBoardPage.closedEvents.push(this.state.items.filter((obj)=>obj.cancelled===true));            
-      }
-    }
   
     getPaper(){
-      return <Paper data={this.state.selectedItem} />;
+      return <Paper data={this.state.selectedItem} deleteData={(id)=>this.deleteData(id)} completeHandler={(id)=>this.completeHandler(id)}/>;
     }
 
     getEmpty(){
@@ -127,7 +132,7 @@ class DashboardPage extends Component {
         </div>
         
         <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 m-b-15 ">
-          <RecentlyProducts data={this.state.items} key ="2"  status="DONE" header="Closed Events"/>
+          <RecentlyProducts data={this.state.items} key ="2"  status="DONE" header="Closed Events" clickEventHandler={(id)=>this.clickEventHandler(id)}/>
         </div>
       
       </div>

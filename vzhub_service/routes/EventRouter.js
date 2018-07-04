@@ -73,24 +73,14 @@ eventRouter.route('/register/:id').post(function (req, res) {
   Item.findById(req.params.id, function(err, item) {
     if (!item)
       return next(new Error('Could not load Document'));
-    else {
-      // do your updates here
-      item.eventId=req.body.item.eventId
-      item.eventName=req.body.item.eventName
-      item.eventDate=req.body.item.eventDate
-      item.datePosted=req.body.item.datePosted
-      item.location=req.body.item.location
-      item.eventDesc=req.body.item.eventDesc
-      item.eventDept=req.body.item.eventDept
-      item.eventPrize=req.body.item.eventPrize
-      item.cancelled=req.body.item.cancelled
-      item.team.push(new Team(req.body.item.team));
+    else {        
+      item.teams.push(new Team(req.body.team));
       item.save().then(item => {
           res.json('Update complete');
       })
       .catch(err => {
             res.status(400).send("unable to update the database");
-      });
+      }); 
     }
   });
 });

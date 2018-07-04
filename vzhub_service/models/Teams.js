@@ -21,3 +21,5 @@ var Team = new Schema({
   }]
 
 });
+
+module.exports = mongoose.model('Team', Team);
